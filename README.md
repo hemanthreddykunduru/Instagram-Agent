@@ -33,167 +33,6 @@
 - **Growth Analytics**: Intelligent follower and engagement growth strategies
 
 ## 🏗️ System Architecture
-
-### Main Agent Flow
-```mermaid
-graph TD
-    Start([Instagram AI Agent Starts]) --> Login[Login to Instagram Account]
-    Login --> MainLoop{Main Activity Loop}
-    
-    MainLoop --> ScrollFeed[Scroll Through Feed]
-    MainLoop --> CheckMessages[Check Direct Messages]
-    MainLoop --> ViewStories[View Stories]
-    MainLoop --> ExploreReels[Explore Reels]
-    MainLoop --> ProfileAnalysis[Analyze Profiles]
-    MainLoop --> ContentGeneration[Generate Content]
-    MainLoop --> StoryCreation[Create Stories]
-    
-    %% Feed Scrolling and Interaction
-    ScrollFeed --> AnalyzePost{Analyze Post Content}
-    AnalyzePost --> ReadCaption[Read Caption & Hashtags]
-    AnalyzePost --> ViewComments[Read Existing Comments]
-    AnalyzePost --> CheckPoster[Analyze Poster Profile]
-    
-    ReadCaption --> SentimentAnalysis{AI Sentiment Analysis}
-    ViewComments --> CommentAnalysis{Analyze Comment Tone}
-    CheckPoster --> RelationshipCheck{Check Relationship Level}
-    
-    SentimentAnalysis -->|Positive Content| LikeDecision{Decide to Like?}
-    SentimentAnalysis -->|Negative Content| SkipPost[Skip Post]
-    CommentAnalysis --> EngagementLevel{Calculate Engagement Level}
-    RelationshipCheck -->|Close Friend| HighPriority[High Engagement Priority]
-    RelationshipCheck -->|Stranger| LowPriority[Low Engagement Priority]
-    
-    LikeDecision -->|Yes| LikePost[👍 Like Post]
-    LikeDecision -->|No| CommentDecision{Decide to Comment?}
-    LikePost --> CommentDecision
-    
-    CommentDecision -->|Yes| GenerateComment[Generate Contextual Comment]
-    CommentDecision -->|No| ShareDecision{Decide to Share?}
-    GenerateComment --> PostComment[Post Comment]
-    PostComment --> ShareDecision
-    
-    ShareDecision -->|Yes| ShareToStory[Share to Story]
-    ShareDecision -->|No| NextPost[Move to Next Post]
-    ShareToStory --> NextPost
-    
-    NextPost --> MainLoop
-    SkipPost --> MainLoop
-    
-    classDef decisionNode fill:#FFE4B5,stroke:#D2691E,stroke-width:2px
-    classDef actionNode fill:#98FB98,stroke:#228B22,stroke-width:2px
-    classDef analysisNode fill:#E6E6FA,stroke:#4B0082,stroke-width:2px
-    classDef startEnd fill:#87CEEB,stroke:#4682B4,stroke-width:3px
-    
-    class Start,MainLoop startEnd
-    class AnalyzePost,SentimentAnalysis,CommentAnalysis,RelationshipCheck,LikeDecision,CommentDecision,ShareDecision decisionNode
-    class LikePost,PostComment,ShareToStory actionNode
-    class ReadCaption,ViewComments,CheckPoster,GenerateComment analysisNode
-```
-
-### Content Generation System
-```mermaid
-graph LR
-    ContentTrigger[Content Creation Trigger] --> MoodAnalysis[AI Mood Analysis]
-    MoodAnalysis --> ContentType{Content Type Selection}
-    
-    ContentType -->|Image Post| ImageGen[AI Image Generation]
-    ContentType -->|Story| StoryGen[Story Creation]
-    ContentType -->|Reel| ReelGen[Reel Production]
-    
-    ImageGen --> StyleAnalysis[Style & Mood Application]
-    StoryGen --> StoryFormat[Format Selection]
-    ReelGen --> TrendAnalysis[Trend Analysis]
-    
-    StyleAnalysis --> CaptionGen[AI Caption Generation]
-    StoryFormat --> StoryPost[Story Publishing]
-    TrendAnalysis --> ReelPost[Reel Publishing]
-    
-    CaptionGen --> HashtagGen[Smart Hashtag Selection]
-    HashtagGen --> FinalPost[Publish to Feed]
-    
-    classDef genNode fill:#FFB6C1,stroke:#DC143C,stroke-width:2px
-    classDef processNode fill:#98FB98,stroke:#228B22,stroke-width:2px
-    
-    class ImageGen,StoryGen,ReelGen,CaptionGen genNode
-    class StyleAnalysis,StoryFormat,TrendAnalysis,HashtagGen processNode
-```
-
-### Message Processing Flow
-```mermaid
-graph TD
-    NewMessage[New Direct Message] --> MessageAnalysis{Analyze Message Content}
-    
-    MessageAnalysis --> Greeting{Greeting?}
-    MessageAnalysis --> Question{Question?}
-    MessageAnalysis --> ContentRequest{Content Request?}
-    MessageAnalysis --> ShareContent{Shared Content?}
-    
-    Greeting --> PersonalityMatch[Apply Personality Traits]
-    Question --> KnowledgeBase[Access Knowledge Base]
-    ContentRequest --> CustomGeneration[Generate Custom Content]
-    ShareContent --> ContentAnalysis[Analyze Shared Content]
-    
-    PersonalityMatch --> ResponseGen[Generate Natural Response]
-    KnowledgeBase --> ResponseGen
-    CustomGeneration --> MoodBasedCreation[Mood-Based Creation]
-    ContentAnalysis --> ReactionGen[Generate Appropriate Reaction]
-    
-    MoodBasedCreation --> SendCustomContent[Send Generated Content]
-    ResponseGen --> SendMessage[Send Reply]
-    ReactionGen --> SendMessage
-    
-    SendMessage --> ConversationMemory[Update Conversation Context]
-    SendCustomContent --> ConversationMemory
-    
-    classDef messageNode fill:#E6E6FA,stroke:#4B0082,stroke-width:2px
-    classDef aiNode fill:#FFE4B5,stroke:#D2691E,stroke-width:2px
-    
-    class MessageAnalysis,Greeting,Question,ContentRequest,ShareContent messageNode
-    class PersonalityMatch,KnowledgeBase,CustomGeneration,MoodBasedCreation aiNode
-```
-
-### Profile Analysis & Following Decision
-```mermaid
-graph TD
-    ProfileVisit[Visit Profile] --> DataCollection[Collect Profile Data]
-    
-    DataCollection --> BioAnalysis[Analyze Bio]
-    DataCollection --> PostAnalysis[Analyze Recent Posts]
-    DataCollection --> FollowerAnalysis[Analyze Follower/Following Ratio]
-    DataCollection --> MutualCheck[Check Mutual Connections]
-    
-    BioAnalysis --> InterestMatch{Interest Compatibility}
-    PostAnalysis --> QualityScore{Content Quality Score}
-    FollowerAnalysis --> AuthenticityCheck{Account Authenticity}
-    MutualCheck --> TrustScore{Trust Level Calculation}
-    
-    InterestMatch -->|High| PositivePoint[+1 Follow Score]
-    InterestMatch -->|Low| NegativePoint[-1 Follow Score]
-    QualityScore -->|High| PositivePoint
-    QualityScore -->|Low| NegativePoint
-    AuthenticityCheck -->|Authentic| PositivePoint
-    AuthenticityCheck -->|Suspicious| NegativePoint
-    TrustScore -->|High| PositivePoint
-    TrustScore -->|Low| NegativePoint
-    
-    PositivePoint --> FinalDecision{Total Score ≥ Threshold?}
-    NegativePoint --> FinalDecision
-    
-    FinalDecision -->|Yes| FollowUser[Follow + Engage with Recent Posts]
-    FinalDecision -->|No| SkipProfile[Skip Profile]
-    
-    FollowUser --> RelationshipBuilding[Begin Relationship Building]
-    SkipProfile --> NextProfile[Find Next Profile]
-    
-    classDef analysisNode fill:#E6E6FA,stroke:#4B0082,stroke-width:2px
-    classDef decisionNode fill:#FFE4B5,stroke:#D2691E,stroke-width:2px
-    classDef actionNode fill:#98FB98,stroke:#228B22,stroke-width:2px
-    
-    class BioAnalysis,PostAnalysis,FollowerAnalysis,MutualCheck analysisNode
-    class InterestMatch,QualityScore,AuthenticityCheck,TrustScore,FinalDecision decisionNode
-    class FollowUser,SkipProfile,RelationshipBuilding actionNode
-```
 ### Overall Structure
 ```mermaid
 graph TD
@@ -423,6 +262,167 @@ graph TD
     class FollowUser,AcceptRequest,PostContent,PostStory actionNode
     class ReadCaption,ViewComments,CheckPoster,GenerateComment,ReadBio analysisNode
     class GenerateImage,GenerateCaption,GenerateStoryImage,MoodImageGen contentNode
+```
+
+### Main Agent Flow
+```mermaid
+graph TD
+    Start([Instagram AI Agent Starts]) --> Login[Login to Instagram Account]
+    Login --> MainLoop{Main Activity Loop}
+    
+    MainLoop --> ScrollFeed[Scroll Through Feed]
+    MainLoop --> CheckMessages[Check Direct Messages]
+    MainLoop --> ViewStories[View Stories]
+    MainLoop --> ExploreReels[Explore Reels]
+    MainLoop --> ProfileAnalysis[Analyze Profiles]
+    MainLoop --> ContentGeneration[Generate Content]
+    MainLoop --> StoryCreation[Create Stories]
+    
+    %% Feed Scrolling and Interaction
+    ScrollFeed --> AnalyzePost{Analyze Post Content}
+    AnalyzePost --> ReadCaption[Read Caption & Hashtags]
+    AnalyzePost --> ViewComments[Read Existing Comments]
+    AnalyzePost --> CheckPoster[Analyze Poster Profile]
+    
+    ReadCaption --> SentimentAnalysis{AI Sentiment Analysis}
+    ViewComments --> CommentAnalysis{Analyze Comment Tone}
+    CheckPoster --> RelationshipCheck{Check Relationship Level}
+    
+    SentimentAnalysis -->|Positive Content| LikeDecision{Decide to Like?}
+    SentimentAnalysis -->|Negative Content| SkipPost[Skip Post]
+    CommentAnalysis --> EngagementLevel{Calculate Engagement Level}
+    RelationshipCheck -->|Close Friend| HighPriority[High Engagement Priority]
+    RelationshipCheck -->|Stranger| LowPriority[Low Engagement Priority]
+    
+    LikeDecision -->|Yes| LikePost[👍 Like Post]
+    LikeDecision -->|No| CommentDecision{Decide to Comment?}
+    LikePost --> CommentDecision
+    
+    CommentDecision -->|Yes| GenerateComment[Generate Contextual Comment]
+    CommentDecision -->|No| ShareDecision{Decide to Share?}
+    GenerateComment --> PostComment[Post Comment]
+    PostComment --> ShareDecision
+    
+    ShareDecision -->|Yes| ShareToStory[Share to Story]
+    ShareDecision -->|No| NextPost[Move to Next Post]
+    ShareToStory --> NextPost
+    
+    NextPost --> MainLoop
+    SkipPost --> MainLoop
+    
+    classDef decisionNode fill:#FFE4B5,stroke:#D2691E,stroke-width:2px
+    classDef actionNode fill:#98FB98,stroke:#228B22,stroke-width:2px
+    classDef analysisNode fill:#E6E6FA,stroke:#4B0082,stroke-width:2px
+    classDef startEnd fill:#87CEEB,stroke:#4682B4,stroke-width:3px
+    
+    class Start,MainLoop startEnd
+    class AnalyzePost,SentimentAnalysis,CommentAnalysis,RelationshipCheck,LikeDecision,CommentDecision,ShareDecision decisionNode
+    class LikePost,PostComment,ShareToStory actionNode
+    class ReadCaption,ViewComments,CheckPoster,GenerateComment analysisNode
+```
+
+### Content Generation System
+```mermaid
+graph LR
+    ContentTrigger[Content Creation Trigger] --> MoodAnalysis[AI Mood Analysis]
+    MoodAnalysis --> ContentType{Content Type Selection}
+    
+    ContentType -->|Image Post| ImageGen[AI Image Generation]
+    ContentType -->|Story| StoryGen[Story Creation]
+    ContentType -->|Reel| ReelGen[Reel Production]
+    
+    ImageGen --> StyleAnalysis[Style & Mood Application]
+    StoryGen --> StoryFormat[Format Selection]
+    ReelGen --> TrendAnalysis[Trend Analysis]
+    
+    StyleAnalysis --> CaptionGen[AI Caption Generation]
+    StoryFormat --> StoryPost[Story Publishing]
+    TrendAnalysis --> ReelPost[Reel Publishing]
+    
+    CaptionGen --> HashtagGen[Smart Hashtag Selection]
+    HashtagGen --> FinalPost[Publish to Feed]
+    
+    classDef genNode fill:#FFB6C1,stroke:#DC143C,stroke-width:2px
+    classDef processNode fill:#98FB98,stroke:#228B22,stroke-width:2px
+    
+    class ImageGen,StoryGen,ReelGen,CaptionGen genNode
+    class StyleAnalysis,StoryFormat,TrendAnalysis,HashtagGen processNode
+```
+
+### Message Processing Flow
+```mermaid
+graph TD
+    NewMessage[New Direct Message] --> MessageAnalysis{Analyze Message Content}
+    
+    MessageAnalysis --> Greeting{Greeting?}
+    MessageAnalysis --> Question{Question?}
+    MessageAnalysis --> ContentRequest{Content Request?}
+    MessageAnalysis --> ShareContent{Shared Content?}
+    
+    Greeting --> PersonalityMatch[Apply Personality Traits]
+    Question --> KnowledgeBase[Access Knowledge Base]
+    ContentRequest --> CustomGeneration[Generate Custom Content]
+    ShareContent --> ContentAnalysis[Analyze Shared Content]
+    
+    PersonalityMatch --> ResponseGen[Generate Natural Response]
+    KnowledgeBase --> ResponseGen
+    CustomGeneration --> MoodBasedCreation[Mood-Based Creation]
+    ContentAnalysis --> ReactionGen[Generate Appropriate Reaction]
+    
+    MoodBasedCreation --> SendCustomContent[Send Generated Content]
+    ResponseGen --> SendMessage[Send Reply]
+    ReactionGen --> SendMessage
+    
+    SendMessage --> ConversationMemory[Update Conversation Context]
+    SendCustomContent --> ConversationMemory
+    
+    classDef messageNode fill:#E6E6FA,stroke:#4B0082,stroke-width:2px
+    classDef aiNode fill:#FFE4B5,stroke:#D2691E,stroke-width:2px
+    
+    class MessageAnalysis,Greeting,Question,ContentRequest,ShareContent messageNode
+    class PersonalityMatch,KnowledgeBase,CustomGeneration,MoodBasedCreation aiNode
+```
+
+### Profile Analysis & Following Decision
+```mermaid
+graph TD
+    ProfileVisit[Visit Profile] --> DataCollection[Collect Profile Data]
+    
+    DataCollection --> BioAnalysis[Analyze Bio]
+    DataCollection --> PostAnalysis[Analyze Recent Posts]
+    DataCollection --> FollowerAnalysis[Analyze Follower/Following Ratio]
+    DataCollection --> MutualCheck[Check Mutual Connections]
+    
+    BioAnalysis --> InterestMatch{Interest Compatibility}
+    PostAnalysis --> QualityScore{Content Quality Score}
+    FollowerAnalysis --> AuthenticityCheck{Account Authenticity}
+    MutualCheck --> TrustScore{Trust Level Calculation}
+    
+    InterestMatch -->|High| PositivePoint[+1 Follow Score]
+    InterestMatch -->|Low| NegativePoint[-1 Follow Score]
+    QualityScore -->|High| PositivePoint
+    QualityScore -->|Low| NegativePoint
+    AuthenticityCheck -->|Authentic| PositivePoint
+    AuthenticityCheck -->|Suspicious| NegativePoint
+    TrustScore -->|High| PositivePoint
+    TrustScore -->|Low| NegativePoint
+    
+    PositivePoint --> FinalDecision{Total Score ≥ Threshold?}
+    NegativePoint --> FinalDecision
+    
+    FinalDecision -->|Yes| FollowUser[Follow + Engage with Recent Posts]
+    FinalDecision -->|No| SkipProfile[Skip Profile]
+    
+    FollowUser --> RelationshipBuilding[Begin Relationship Building]
+    SkipProfile --> NextProfile[Find Next Profile]
+    
+    classDef analysisNode fill:#E6E6FA,stroke:#4B0082,stroke-width:2px
+    classDef decisionNode fill:#FFE4B5,stroke:#D2691E,stroke-width:2px
+    classDef actionNode fill:#98FB98,stroke:#228B22,stroke-width:2px
+    
+    class BioAnalysis,PostAnalysis,FollowerAnalysis,MutualCheck analysisNode
+    class InterestMatch,QualityScore,AuthenticityCheck,TrustScore,FinalDecision decisionNode
+    class FollowUser,SkipProfile,RelationshipBuilding actionNode
 ```
 
 ## 🖥️ System Requirements
