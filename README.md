@@ -194,6 +194,236 @@ graph TD
     class InterestMatch,QualityScore,AuthenticityCheck,TrustScore,FinalDecision decisionNode
     class FollowUser,SkipProfile,RelationshipBuilding actionNode
 ```
+### Overall Structure
+```mermaid
+graph TD
+    Start([Instagram AI Agent Starts]) --> Login[Login to Instagram Account]
+    Login --> MainLoop{Main Activity Loop}
+    
+    MainLoop --> ScrollFeed[Scroll Through Feed]
+    MainLoop --> CheckMessages[Check Direct Messages]
+    MainLoop --> ViewStories[View Stories]
+    MainLoop --> ExploreReels[Explore Reels]
+    MainLoop --> ProfileAnalysis[Analyze Profiles]
+    MainLoop --> ContentGeneration[Generate Content]
+    MainLoop --> StoryCreation[Create Stories]
+    
+    %% Feed Scrolling and Interaction
+    ScrollFeed --> AnalyzePost{Analyze Post Content}
+    AnalyzePost --> ReadCaption[Read Caption & Hashtags]
+    AnalyzePost --> ViewComments[Read Existing Comments]
+    AnalyzePost --> CheckPoster[Analyze Poster Profile]
+    
+    ReadCaption --> SentimentAnalysis{AI Sentiment Analysis}
+    ViewComments --> CommentAnalysis{Analyze Comment Tone}
+    CheckPoster --> RelationshipCheck{Check Relationship Level}
+    
+    SentimentAnalysis -->|Positive Content| LikeDecision{Decide to Like?}
+    SentimentAnalysis -->|Negative Content| SkipPost[Skip Post]
+    CommentAnalysis --> EngagementLevel{Calculate Engagement Level}
+    RelationshipCheck -->|Close Friend| HighPriority[High Engagement Priority]
+    RelationshipCheck -->|Stranger| LowPriority[Low Engagement Priority]
+    
+    LikeDecision -->|Yes| LikePost[👍 Like Post]
+    LikeDecision -->|No| CommentDecision{Decide to Comment?}
+    LikePost --> CommentDecision
+    
+    CommentDecision -->|Yes| GenerateComment[Generate Contextual Comment]
+    CommentDecision -->|No| ShareDecision{Decide to Share?}
+    GenerateComment --> PostComment[Post Comment]
+    PostComment --> ShareDecision
+    
+    ShareDecision -->|Yes| ShareToStory[Share to Story]
+    ShareDecision -->|No| NextPost[Move to Next Post]
+    ShareToStory --> NextPost
+    
+    %% Reels Interaction
+    ExploreReels --> WatchReel[Watch Reel]
+    WatchReel --> AnalyzeReelContent{Analyze Reel Content}
+    AnalyzeReelContent --> ReelDescription[Read Description]
+    AnalyzeReelContent --> ReelComments[Read Comments]
+    AnalyzeReelContent --> ReelMusic[Analyze Audio/Music]
+    
+    ReelDescription --> ReelSentiment{AI Content Analysis}
+    ReelComments --> ReelEngagement{Analyze Engagement Quality}
+    ReelMusic --> MoodAnalysis{Analyze Mood Compatibility}
+    
+    ReelSentiment -->|Matches Interests| ReelLike[👍 Like Reel]
+    ReelSentiment -->|Doesn't Match| NextReel[Skip to Next Reel]
+    ReelLike --> ReelCommentCheck{Generate Comment?}
+    
+    ReelCommentCheck -->|Yes| CreateReelComment[Create Relevant Comment]
+    ReelCommentCheck -->|No| ReelShare{Share Reel?}
+    CreateReelComment --> ReelShare
+    
+    ReelShare -->|Yes| ShareReelToStory[Share Reel to Story]
+    ReelShare -->|Yes| SendReelToDM[Send Reel to Friends]
+    ReelShare -->|No| NextReel
+    
+    %% Stories Interaction
+    ViewStories --> StoryAnalysis{Analyze Story Content}
+    StoryAnalysis --> StoryReaction{Generate Reaction?}
+    StoryReaction -->|Yes| ReactToStory[Add Reaction Emoji]
+    StoryReaction -->|No| ReplyToStory{Reply to Story?}
+    ReactToStory --> ReplyToStory
+    
+    ReplyToStory -->|Yes| GenerateStoryReply[Generate Personal Reply]
+    ReplyToStory -->|No| NextStory[View Next Story]
+    GenerateStoryReply --> SendStoryReply[Send Story Reply]
+    SendStoryReply --> NextStory
+    
+    %% Profile Analysis and Following
+    ProfileAnalysis --> ViewProfile[Open Random Profile]
+    ViewProfile --> ReadBio[Read Profile Bio]
+    ViewProfile --> CheckPosts[View Recent Posts]
+    ViewProfile --> CheckFollowers[Analyze Follower Count]
+    ViewProfile --> MutualConnections[Check Mutual Friends]
+    
+    ReadBio --> BioCompatibility{Bio Matches Interests?}
+    CheckPosts --> PostQuality{Assess Content Quality}
+    CheckFollowers --> FollowerRatio{Good Follower Ratio?}
+    MutualConnections --> TrustScore{Calculate Trust Score}
+    
+    BioCompatibility -->|Yes| PositiveSignal[+1 Follow Score]
+    BioCompatibility -->|No| NegativeSignal[-1 Follow Score]
+    PostQuality -->|High Quality| PositiveSignal
+    PostQuality -->|Low Quality| NegativeSignal
+    FollowerRatio -->|Good Ratio| PositiveSignal
+    FollowerRatio -->|Suspicious Ratio| NegativeSignal
+    TrustScore -->|High Trust| PositiveSignal
+    TrustScore -->|Low Trust| NegativeSignal
+    
+    PositiveSignal --> FollowDecision{Total Score > Threshold?}
+    NegativeSignal --> FollowDecision
+    
+    FollowDecision -->|Yes| FollowUser[➕ Follow User]
+    FollowDecision -->|No| SkipUser[Skip User]
+    FollowUser --> LikeRecentPosts[Like 2-3 Recent Posts]
+    LikeRecentPosts --> NextProfile[Find Next Profile]
+    SkipUser --> NextProfile
+    
+    %% Message Handling
+    CheckMessages --> NewMessage{New Messages?}
+    NewMessage -->|Yes| ReadMessage[Read Message Content]
+    NewMessage -->|No| MessageEnd[Return to Main Loop]
+    
+    ReadMessage --> MessageAnalysis{Analyze Message Intent}
+    MessageAnalysis --> FriendRequest{Friend Request?}
+    MessageAnalysis --> Question{Question Asked?}
+    MessageAnalysis --> Greeting{Greeting Message?}
+    MessageAnalysis --> ReelShare{Shared Reel/Post?}
+    
+    FriendRequest --> ProfileCheck[Check Sender Profile]
+    Question --> GenerateAnswer[Generate Helpful Answer]
+    Greeting --> GenerateGreeting[Generate Friendly Response]
+    ReelShare --> ViewSharedContent[View Shared Content]
+    
+    ProfileCheck --> AcceptDecision{Accept Request?}
+    AcceptDecision -->|Yes| AcceptRequest[Accept Friend Request]
+    AcceptDecision -->|No| DeclineRequest[Decline Request]
+    
+    GenerateAnswer --> SendReply[Send Reply Message]
+    GenerateGreeting --> SendReply
+    ViewSharedContent --> ReactToShared[React to Shared Content]
+    ReactToShared --> SendReply
+    
+    SendReply --> MessageEnd
+    AcceptRequest --> MessageEnd
+    DeclineRequest --> MessageEnd
+    
+    %% Content Generation
+    ContentGeneration --> ContentMood{Determine Current Mood}
+    ContentMood --> ContentType{Choose Content Type}
+    
+    ContentType -->|Photo Post| GenerateImage[Generate AI Image]
+    ContentType -->|Text Post| GenerateCaption[Generate Text Content]
+    ContentType -->|Quote Post| GenerateQuote[Generate Inspirational Quote]
+    
+    GenerateImage --> ImageStyle{Choose Image Style}
+    ImageStyle --> MoodBasedImage[Generate Mood-Based Image]
+    MoodBasedImage --> AddCaption[Add Generated Caption]
+    AddCaption --> AddHashtags[Add Relevant Hashtags]
+    AddHashtags --> PostContent[📤 Post to Feed]
+    
+    GenerateCaption --> TextMood[Apply Current Mood to Text]
+    GenerateQuote --> QuoteMood[Apply Current Mood to Quote]
+    TextMood --> PostContent
+    QuoteMood --> PostContent
+    
+    %% Story Creation
+    StoryCreation --> StoryMood{Current Mood Check}
+    StoryMood --> StoryType{Choose Story Type}
+    
+    StoryType -->|Image Story| GenerateStoryImage[Generate Story Image]
+    StoryType -->|Text Story| GenerateStoryText[Generate Story Text]
+    StoryType -->|Music Story| AddMusicStory[Add Music to Story]
+    StoryType -->|Boomerang| CreateBoomerang[Create Boomerang Effect]
+    
+    GenerateStoryImage --> StoryFilters[Apply Random Filters]
+    GenerateStoryText --> StoryBackground[Choose Background]
+    AddMusicStory --> TrendingMusic[Select Trending Music]
+    
+    StoryFilters --> PostStory[📱 Post to Story]
+    StoryBackground --> PostStory
+    TrendingMusic --> PostStory
+    CreateBoomerang --> PostStory
+    
+    %% Story Notes
+    PostStory --> AddStoryNote{Add Story Note?}
+    AddStoryNote -->|Yes| GenerateNote[Generate Mood-Based Note]
+    AddStoryNote -->|No| StoryEnd[Story Complete]
+    GenerateNote --> PostNote[Post Story Note]
+    PostNote --> StoryEnd
+    
+    %% Friend Interaction and Mood-Based Generation
+    SendReply --> FriendRequest2{Friend Asks for Image?}
+    FriendRequest2 -->|Yes| FriendMoodCheck[Check AI Agent's Mood]
+    FriendRequest2 -->|No| MessageEnd
+    
+    FriendMoodCheck --> MoodImageGen[Generate Mood-Based Image]
+    MoodImageGen --> SendImageToFriend[Send Generated Image]
+    SendImageToFriend --> MessageEnd
+    
+    %% Self Introduction
+    GenerateGreeting --> IntroCheck{First Time Meeting?}
+    IntroCheck -->|Yes| SelfIntroduction[Generate Human-like Introduction]
+    IntroCheck -->|No| CasualGreeting[Generate Casual Greeting]
+    
+    SelfIntroduction --> PersonalDetails[Add Personal Details & Interests]
+    PersonalDetails --> FriendlyTone[Use Friendly, Human Tone]
+    FriendlyTone --> SendIntro[Send Introduction Message]
+    CasualGreeting --> SendReply
+    SendIntro --> MessageEnd
+    
+    %% Return to Main Loop
+    NextPost --> MainLoop
+    NextReel --> MainLoop
+    NextStory --> MainLoop
+    NextProfile --> MainLoop
+    MessageEnd --> MainLoop
+    PostContent --> MainLoop
+    StoryEnd --> MainLoop
+    SkipPost --> MainLoop
+    
+    %% Styling
+    classDef decisionNode fill:#FFE4B5,stroke:#D2691E,stroke-width:2px
+    classDef actionNode fill:#98FB98,stroke:#228B22,stroke-width:2px
+    classDef analysisNode fill:#E6E6FA,stroke:#4B0082,stroke-width:2px
+    classDef contentNode fill:#FFB6C1,stroke:#DC143C,stroke-width:2px
+    classDef startEnd fill:#87CEEB,stroke:#4682B4,stroke-width:3px
+    
+    class Start,MainLoop startEnd
+    class AnalyzePost,SentimentAnalysis,CommentAnalysis,RelationshipCheck,LikeDecision,CommentDecision,ShareDecision decisionNode
+    class AnalyzeReelContent,ReelSentiment,ReelEngagement,ReelCommentCheck,ReelShare decisionNode
+    class StoryAnalysis,StoryReaction,ReplyToStory decisionNode
+    class BioCompatibility,PostQuality,FollowerRatio,TrustScore,FollowDecision decisionNode
+    class MessageAnalysis,FriendRequest,Question,Greeting,AcceptDecision decisionNode
+    class ContentMood,ContentType,ImageStyle,StoryMood,StoryType,AddStoryNote decisionNode
+    class LikePost,PostComment,ShareToStory,ReactToStory,SendReply actionNode
+    class FollowUser,AcceptRequest,PostContent,PostStory actionNode
+    class ReadCaption,ViewComments,CheckPoster,GenerateComment,ReadBio analysisNode
+    class GenerateImage,GenerateCaption,GenerateStoryImage,MoodImageGen contentNode
+```
 
 ## 🖥️ System Requirements
 
